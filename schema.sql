@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS licoreria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE licoreria;
+CREATE DATABASE IF NOT EXISTS Kiosko CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE Kiosko;
 
 DROP TABLE IF EXISTS detalle_ventas;
 DROP TABLE IF EXISTS ventas;

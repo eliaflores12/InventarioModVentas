@@ -1,6 +1,6 @@
-# Inventario Mod Ventas — Sistema de Inventarios Licorería
+# Inventario Mod Ventas — Sistema de Inventarios Kiosko
 
-Sistema web MVC para gestión de inventario y ventas de una licorería, construido con **Flask** y **MySQL** (XAMPP).
+Sistema web MVC para gestión de inventario y ventas de un kiosko, construido con **Flask** y **MySQL** (XAMPP).
 
 ## Características
 
@@ -34,7 +34,7 @@ InventarioModVentas/
 
 ## Base de datos
 
-Ejecuta el esquema para crear la base `licoreria` con datos de ejemplo:
+Ejecuta el esquema para crear la base `Kiosko` con datos de ejemplo:
 
 ```bash
 mysql -u root < schema.sql
@@ -69,7 +69,7 @@ Tablas:
    pip install flask pymysql
    ```
 
-4. Configurar la conexión a MySQL en `config.py` (`host`, `user`, `password`, `database`). Por defecto usa XAMPP: usuario `root`, sin contraseña, base `licoreria`.
+4. Configurar la conexión a MySQL en `config.py` (`host`, `user`, `password`, `database`). Por defecto usa XAMPP: usuario `root`, sin contraseña, base `Kiosko`.
 
 5. Crear la base de datos:
 

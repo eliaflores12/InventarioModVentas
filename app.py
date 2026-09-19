@@ -31,7 +31,7 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    print('Sistema de Inventarios Licoreria (MVC)')
+    print('Sistema de Inventarios Kiosko (MVC)')
     print(f'  Usuario: {USUARIO} | Clave: {CLAVE}')
     print(f'  Abre: http://127.0.0.1:{PORT}')
     app.run(host='0.0.0.0', port=PORT, debug=True, use_reloader=False)

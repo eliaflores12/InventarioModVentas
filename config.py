@@ -5,13 +5,13 @@ DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
     'password': '',
-    'database': 'licoreria',
+    'database': 'Kiosko',
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor,
     'autocommit': True,
 }
 
-SECRET_KEY = 'licoreria-secret-key-2026'
+SECRET_KEY = 'kiosko-secret-key-2026'
 USUARIO = 'admin'
 CLAVE = 'admin123'
 PORT = 8000
