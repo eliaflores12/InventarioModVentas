@@ -1,0 +1,144 @@
+﻿{% extends 'base.html' %}
+{% block titulo %}Nueva Venta{% endblock %}
+{% block cabecera %}Registrar Venta{% endblock %}
+{% block contenido %}
+
+<div class="panel">
+  <h2>Datos de la venta</h2>
+  <form method="post" action="{{ url_for('ventas.registrar') }}" id="formVenta">
+    <div class="fila">
+      <div><label>Cliente</label><input type="text" name="cliente" value="Consumidor final" placeholder="Nombre del cliente"></div>
+      <div><label>Buscador de productos</label>
+        <input type="text" id="buscarProducto" placeholder="Escribe nombre o marca y selecciona..." autocomplete="off">
+        <div id="sugerencias" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div id="items"></div>
+
+    <div class="total-grande">
+      <span>TOTAL</span>
+      <span id="totalDisplay">$0</span>
+    </div>
+    <input type="hidden" id="total" name="total">
+
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button type="submit" class="btn verde" style="flex:1; padding:12px;">Registrar venta</button>
+      <a href="{{ url_for('ventas.listar') }}" class="btn gris">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<style>
+#buscarProducto { position:relative; }
+#sugerencias { position:absolute; z-index:50; background:#fff; border:1px solid #d5dbe3; border-radius:6px;
+  max-height:280px; overflow-y:auto; width:100%; box-shadow:0 4px 12px rgba(0,0,0,.15); }
+#sugerencias div { padding:10px 12px; cursor:pointer; border-bottom:1px solid #f2f4f7; font-size:14px; }
+#sugerencias div:hover { background:#f4f7fa; }
+#sugerencias div small { color:#7f8fa6; }
+#items .item { display:grid; grid-template-columns:2.2fr 1fr 1fr 1fr 200px 44px; gap:10px; align-items:center;
+  background:#fafbfc; border:1px solid #ecf0f1; border-radius:8px; padding:10px; margin-bottom:8px; }
+#items .item .nom { font-weight:600; font-size:14px; }
+#items .item .sub { text-align:right; font-weight:700; color:#27ae60; }
+</style>
+
+<script>
+let filaId = 0;
+
+function totalizar() {
+  let total = 0;
+  document.querySelectorAll('#items .item').forEach(f => {
+    const sub = parseFloat(f.querySelector('.sub').dataset.valor || 0);
+    total += sub;
+  });
+  document.getElementById('total').value = total.toFixed(2);
+  document.getElementById('totalDisplay').textContent = '$' + total.toLocaleString('es-CO', {maximumFractionDigits:0});
+}
+
+function agregarFila(p) {
+  filaId++;
+  const div = document.createElement('div');
+  div.className = 'item';
+  div.dataset.producto = p.id;
+  div.innerHTML = `
+    <div class="nom">${p.nombre}<small style="display:block;color:#7f8fa6;">Stock: ${p.stock} · ${p.marca || ''}</small></div>
+    <div>
+      <label>Cantidad</label>
+      <input type="number" name="cantidad[]" class="cantidad" value="1" min="1" max="${p.stock}" required>
+    </div>
+    <div>
+      <label>Precio unit.</label>
+      <div style="padding:8px 0;">${'$' + Number(p.precio).toLocaleString('es-CO', {maximumFractionDigits:0})}</div>
+    </div>
+    <div>
+      <label>Subtotal</label>
+      <div class="sub" data-valor="${p.precio}">${'$' + Number(p.precio).toLocaleString('es-CO', {maximumFractionDigits:0})}</div>
+    </div>
+    <div style="display:flex; gap:6px; grid-column: span 2;"></div>
+    <button type="button" class="btn rojo small quitar" title="Quitar">✕</button>
+  `;
+  div.querySelector('.sub').dataset.valor = p.precio;
+  div.querySelector('.cantidad').addEventListener('input', () => {
+    const cant = Math.max(1, parseInt(div.querySelector('.cantidad').value || 0));
+    const max = parseInt(div.querySelector('.cantidad').max);
+    if (cant > max) div.querySelector('.cantidad').value = max;
+    const precio = parseFloat(div.querySelector('.sub').dataset.valor);
+    div.querySelector('.sub').dataset.valor = precio;
+    div.querySelector('.sub').textContent = '$' + (precio * parseInt(div.querySelector('.cantidad').value)).toLocaleString('es-CO', {maximumFractionDigits:0});
+    totalizar();
+  });
+  div.querySelector('.quitar').addEventListener('click', () => { div.remove(); totalizar(); });
+  document.getElementById('items').appendChild(div);
+  totalizar();
+}
+
+const buscar = document.getElementById('buscarProducto');
+const sugerencias = document.getElementById('sugerencias');
+let tiempo = null;
+
+buscar.addEventListener('input', () => {
+  clearTimeout(tiempo);
+  const term = buscar.value.trim();
+  if (term.length < 2) { sugerencias.style.display = 'none'; return; }
+  tiempo = setTimeout(async () => {
+    const res = await fetch('/buscar_producto?q=' + encodeURIComponent(term));
+    const data = await res.json();
+    if (!data.length) { sugerencias.innerHTML = '<div style="color:#95a5a6;">Sin resultados</div>'; sugerencias.style.display='block'; return; }
+    sugerencias.innerHTML = data.map(p => `
+      <div data-id="${p.id}" data-json='${JSON.stringify(p).replace(/'/g, "&#39;")}'>
+        <b>${p.nombre}</b> <small>· ${p.marca || ''} · Stock: ${p.stock}</small><br>
+        <small>Precio: $${Number(p.precio).toLocaleString('es-CO', {maximumFractionDigits:0})}</small>
+      </div>`).join('');
+    sugerencias.style.display = 'block';
+    sugerencias.querySelectorAll('div[data-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        const js = el.dataset.json.replace(/&#39;/g, "'");
+        agregarFila(JSON.parse(js));
+        buscar.value = '';
+        sugerencias.style.display = 'none';
+      });
+    });
+  }, 250);
+});
+
+document.addEventListener('click', e => {
+  if (!sugerencias.contains(e.target) && e.target !== buscar) sugerencias.style.display = 'none';
+});
+
+document.getElementById('formVenta').addEventListener('submit', e => {
+  const items = document.querySelectorAll('#items .item');
+  if (!items.length) {
+    e.preventDefault();
+    alert('Agrega al menos un producto a la venta.');
+    return;
+  }
+  document.querySelectorAll('#items .item').forEach(f => {
+    const pid = document.createElement('input');
+    pid.type = 'hidden';
+    pid.name = 'producto_id[]';
+    pid.value = f.dataset.producto;
+    f.appendChild(pid);
+  });
+});
+</script>
+{% endblock %}

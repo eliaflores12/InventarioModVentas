@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block login_form %}
+<form method="post" action="{{ url_for('auth.login') }}">
+  <div>
+    <label>Usuario</label>
+    <input type="text" name="usuario" required autofocus>
+  </div>
+  <div>
+    <label>Contraseña</label>
+    <input type="password" name="clave" required>
+  </div>
+  <button type="submit" class="btn">Ingresar</button>
+  <p style="text-align:center; margin-top:14px; font-size:12px; color:#95a5a6;">
+    Usuario: <b>admin</b> · Clave: <b>admin123</b>
+  </p>
+</form>
+{% endblock %}

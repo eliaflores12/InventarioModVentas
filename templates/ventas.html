@@ -1,0 +1,40 @@
+﻿{% extends 'base.html' %}
+{% block titulo %}Ventas{% endblock %}
+{% block cabecera %}Historial de Ventas{% endblock %}
+{% block contenido %}
+
+<div class="barra-buscar">
+  <form method="get" action="{{ url_for('ventas.listar') }}">
+    <input type="date" name="fecha" value="{{ fecha }}">
+    <button class="btn gris" type="submit">Filtrar por fecha</button>
+    {% if fecha %}<a class="btn gris" href="{{ url_for('ventas.listar') }}">Limpiar</a>{% endif %}
+  </form>
+  <a class="btn verde" href="{{ url_for('ventas.nueva') }}">+ Nueva venta</a>
+</div>
+
+<div class="panel">
+  <h2>Ventas ({{ ventas|length }}) · Total filtrado: <span style="color:#27ae60;">{{ total_filtrado|dinero }}</span></h2>
+  {% if ventas %}
+  <table>
+    <tr><th># Venta</th><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Acciones</th></tr>
+    {% for v in ventas %}
+    <tr>
+      <td><b>#{{ v.id }}</b></td>
+      <td>{{ v.fecha|fecha }}</td>
+      <td>{{ v.cliente }}</td>
+      <td>{{ v.articulos }}</td>
+      <td><b>{{ v.total|dinero }}</b></td>
+      <td class="acciones">
+        <a class="btn azul small" href="{{ url_for('ventas.detalle', vid=v.id) }}">Ver detalle</a>
+        <a class="btn rojo small" href="{{ url_for('ventas.eliminar', vid=v.id) }}"
+           onclick="return confirm('¿Eliminar la venta #{{ v.id }}?');">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:#7f8fa6;">No hay ventas registradas{{ ' para esa fecha' if fecha }}.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

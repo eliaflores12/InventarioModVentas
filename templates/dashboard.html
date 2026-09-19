@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block titulo %}dashboard{% endblock %}
+{% block cabecera %}dashboard Principal{% endblock %}
+{% block contenido %}
+
+<div class="tarjetas">
+  <div class="tarjeta">
+    <div class="etiqueta">Productos registrados</div>
+    <div class="valor">{{ productos }}</div>
+  </div>
+  <div class="tarjeta amarilla">
+    <div class="etiqueta">Stock bajo (&le; 10)</div>
+    <div class="valor">{{ stock_bajo }}</div>
+  </div>
+  <div class="tarjeta verde">
+    <div class="etiqueta">Ventas de hoy</div>
+    <div class="valor">{{ ventas_hoy.n }}</div>
+    <div style="font-size:14px; color:#1e8449; margin-top:4px;">{{ ventas_hoy.total|dinero }}</div>
+  </div>
+  <div class="tarjeta azul">
+    <div class="etiqueta">Ventas acumuladas</div>
+    <div class="valor">{{ ventas_totales|dinero }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>⚠️ Productos con stock bajo</h2>
+  {% if productos_bajos %}
+  <table>
+    <tr><th>Producto</th><th>Marca</th><th>Categoría</th><th>Precio</th><th>Stock</th></tr>
+    {% for p in productos_bajos %}
+    <tr>
+      <td>{{ p.nombre }}</td>
+      <td>{{ p.marca }}</td>
+      <td>{{ p.categoria or '—' }}</td>
+      <td>{{ p.precio|dinero }}</td>
+      <td><span class="badge {{ 'bajo' if p.stock <= 5 else 'warn' }}">{{ p.stock }}</span></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:#7f8fa6;">Todo en orden, ningún producto con stock bajo.</p>
+  {% endif %}
+</div>
+
+<div class="panel">
+  <h2>🧾 Últimas ventas</h2>
+  {% if ultimas_ventas %}
+  <table>
+    <tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Total</th><th></th></tr>
+    {% for v in ultimas_ventas %}
+    <tr>
+      <td>{{ v.id }}</td>
+      <td>{{ v.fecha|fecha }}</td>
+      <td>{{ v.cliente }}</td>
+      <td>{{ v.total|dinero }}</td>
+      <td class="acciones"><a class="btn azul small" href="{{ url_for('ventas.detalle', vid=v.id) }}">Ver</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:#7f8fa6;">Aún no hay ventas registradas.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

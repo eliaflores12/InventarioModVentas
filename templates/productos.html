@@ -1,0 +1,87 @@
+﻿{% extends 'base.html' %}
+{% block titulo %}Inventario{% endblock %}
+{% block cabecera %}Inventario de Productos{% endblock %}
+{% block contenido %}
+
+{% set editar = editando[0] if editando else none %}
+
+<div class="barra-buscar">
+  <form method="get" action="{{ url_for('productos.listar') }}">
+    <input type="text" name="buscar" placeholder="Buscar por nombre o marca..." value="{{ buscar }}" style="width:260px;">
+    <select name="categoria" style="width:190px;">
+      <option value="">Todas las categorías</option>
+      {% for c in categorias %}
+      <option value="{{ c.id }}" {{ 'selected' if categoria|string==c.id|string }}>{{ c.nombre }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn gris" type="submit">Filtrar</button>
+    <a class="btn gris" href="{{ url_for('productos.listar') }}">Limpiar</a>
+  </form>
+  <button class="btn verde" onclick="document.getElementById('formProducto').style.display='block'; scrollIntoViewForm()">+ Nuevo producto</button>
+</div>
+
+{% if not editar %}
+<div class="panel" id="formProducto" style="display:none;">
+{% else %}
+<div class="panel" id="formProducto">
+{% endif %}
+  <h2>{{ 'Editar producto' if editar else 'Nuevo producto' }}</h2>
+  <form method="post" action="{{ url_for('productos.guardar') }}">
+    <input type="hidden" name="id" value="{{ editar.id if editar else '' }}">
+    <div class="fila">
+      <div><label>Nombre *</label><input type="text" name="nombre" required value="{{ editar.nombre if editar }}" placeholder="Ej: Whisky Johnnie Walker"></div>
+      <div><label>Categoría</label>
+        <select name="categoria_id">
+          <option value="">Sin categoría</option>
+          {% for c in categorias %}
+          <option value="{{ c.id }}" {{ 'selected' if editar and editar.categoria_id==c.id }}>{{ c.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="fila">
+      <div><label>Precio *</label><input type="number" step="0.01" min="0" name="precio" required value="{{ editar.precio if editar else '' }}" placeholder="0"></div>
+      <div><label>Stock inicial *</label><input type="number" min="0" name="stock" required value="{{ editar.stock if editar else '' }}" placeholder="0"></div>
+      <div><label>Marca</label><input type="text" name="marca" value="{{ editar.marca if editar }}" placeholder="Ej: Absolut"></div>
+    </div>
+    <div class="fila">
+      <div><label>Descripción</label><textarea name="descripcion" rows="2" placeholder="Detalles del producto">{{ editar.descripcion if editar }}</textarea></div>
+    </div>
+    <button class="btn verde" type="submit">{{ 'Guardar cambios' if editar else 'Registrar producto' }}</button>
+    {% if editar %}<a class="btn gris" href="{{ url_for('productos.listar') }}">Cancelar</a>{% endif %}
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Listado de productos ({{ productos|length }})</h2>
+  {% if productos %}
+  <table>
+    <tr><th>Producto</th><th>Marca</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr>
+    {% for p in productos %}
+    <tr>
+      <td><b>{{ p.nombre }}</b><br><small style="color:#7f8fa6;">{{ p.descripcion or '' }}</small></td>
+      <td>{{ p.marca or '—' }}</td>
+      <td>{{ p.categoria or '—' }}</td>
+      <td>{{ p.precio|dinero }}</td>
+      <td>
+        <span class="badge {{ 'bajo' if p.stock==0 else ('warn' if p.stock<=10 else 'ok') }}">{{ p.stock }}</span>
+      </td>
+      <td class="acciones">
+        <a class="btn azul small" href="{{ url_for('productos.listar') }}?editar={{ p.id }}">Editar</a>
+        <a class="btn rojo small" href="{{ url_for('productos.eliminar', pid=p.id) }}"
+           onclick="return confirm('¿Eliminar el producto \"{{ p.nombre }}\"?');">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p style="color:#7f8fa6;">No hay productos. Crea uno con el botón "Nuevo producto".</p>
+  {% endif %}
+</div>
+
+<script>
+function scrollIntoViewForm() {
+  document.getElementById('formProducto').scrollIntoView({behavior:'smooth'});
+}
+</script>
+{% endblock %}

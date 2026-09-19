@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Entorno / configuración sensible
+.env
+.env.*
+*.key
+*.pem
+
+# Logs
+*.log
+server.log
+server_err.log
+
+# IDE / SO
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Bases de datos locales
+*.sqlite3
+*.db

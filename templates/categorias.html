@@ -1,0 +1,54 @@
+﻿{% extends 'base.html' %}
+{% block titulo %}Categorías{% endblock %}
+{% block cabecera %}Gestión de Categorías{% endblock %}
+{% block contenido %}
+
+{% set editando = editando[0] if editando else none %}
+
+{% if not editando %}
+<div class="panel">
+  <h2>Nueva categoría</h2>
+  <form method="post" action="{{ url_for('categorias.guardar') }}">
+    <div class="fila">
+      <div><label>Nombre *</label><input type="text" name="nombre" required placeholder="Ej: Champagne"></div>
+      <div><label>Descripción</label><input type="text" name="descripcion" placeholder="Descripción de la categoría"></div>
+      <div style="flex:0;"><button class="btn verde" type="submit">Registrar</button></div>
+    </div>
+  </form>
+</div>
+{% else %}
+<div class="panel">
+  <h2>Editar categoría: {{ editando.nombre }}</h2>
+  <form method="post" action="{{ url_for('categorias.guardar') }}">
+    <input type="hidden" name="id" value="{{ editando.id }}">
+    <div class="fila">
+      <div><label>Nombre *</label><input type="text" name="nombre" required value="{{ editando.nombre }}"></div>
+      <div><label>Descripción</label><input type="text" name="descripcion" value="{{ editando.descripcion or '' }}"></div>
+      <div style="flex:0;"><button class="btn verde" type="submit">Guardar</button>
+      <a class="btn gris" href="{{ url_for('categorias.listar') }}">Cancelar</a></div>
+    </div>
+  </form>
+</div>
+{% endif %}
+
+<div class="panel">
+  <h2>Listado de categorías ({{ categorias|length }})</h2>
+  <table>
+    <tr><th>#</th><th>Categoría</th><th>Descripción</th><th>Productos</th><th>Acciones</th></tr>
+    {% for c in categorias %}
+    <tr>
+      <td>{{ c.id }}</td>
+      <td><b>{{ c.nombre }}</b></td>
+      <td>{{ c.descripcion or '—' }}</td>
+      <td><span class="badge ok">{{ c.productos }}</span></td>
+      <td class="acciones">
+        <a class="btn azul small" href="{{ url_for('categorias.listar') }}?editar={{ c.id }}">Editar</a>
+        <a class="btn rojo small" href="{{ url_for('categorias.eliminar', cid=c.id) }}"
+           onclick="return confirm('¿Eliminar la categoría \"{{ c.nombre }}\"? Los productos quedarán sin categoría.');">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

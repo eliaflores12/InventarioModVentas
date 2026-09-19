@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block titulo %}Licoreria{% endblock %}</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Tahoma,Verdana,sans-serif; background:#f4f6f9; color:#2c3e50; }
+a { text-decoration:none; color:inherit; }
+
+.layout { display:flex; min-height:100vh; }
+.sidebar { width:230px; background:#1b2534; color:#cfd8e3; flex-shrink:0; display:flex; flex-direction:column; }
+.sidebar .logo { padding:20px 18px; font-size:20px; font-weight:700; color:#f1c40f; letter-spacing:1px; border-bottom:1px solid #2a3850; }
+.sidebar .logo small { display:block; font-size:11px; color:#7f8fa6; font-weight:400; margin-top:2px; }
+.sidebar nav { flex:1; padding-top:10px; }
+.sidebar nav a { display:flex; align-items:center; gap:10px; padding:12px 18px; color:#cfd8e3; border-left:3px solid transparent; transition:.15s; }
+.sidebar nav a:hover { background:#223049; color:#fff; border-left-color:#f1c40f; }
+.sidebar nav a.activo { background:#223049; color:#fff; border-left-color:#f1c40f; }
+.sidebar .usuario { padding:14px 18px; border-top:1px solid #2a3850; font-size:13px; }
+.sidebar .usuario b { color:#fff; }
+.sidebar .cerrar { display:block; margin-top:8px; color:#e74c3c; }
+
+.main { flex:1; display:flex; flex-direction:column; }
+.topbar { background:#fff; padding:14px 24px; box-shadow:0 1px 3px rgba(0,0,0,.08); display:flex; justify-content:space-between; align-items:center; }
+.topbar h1 { font-size:19px; }
+.contenido { padding:22px 24px; flex:1; }
+
+.tarjetas { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:22px; }
+.tarjeta { background:#fff; border-radius:10px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,.08); border-left:4px solid #1b2534; }
+.tarjeta.amarilla { border-left-color:#f39c12; }
+.tarjeta.verde { border-left-color:#27ae60; }
+.tarjeta.azul { border-left-color:#2980b9; }
+.tarjeta .etiqueta { font-size:12px; color:#7f8fa6; text-transform:uppercase; letter-spacing:.5px; }
+.tarjeta .valor { font-size:24px; font-weight:700; margin-top:6px; }
+
+.panel { background:#fff; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,.08); padding:20px; margin-bottom:20px; }
+.panel h2 { font-size:16px; margin-bottom:14px; color:#34495e; }
+
+table { width:100%; border-collapse:collapse; }
+th { text-align:left; font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:#7f8fa6; padding:10px 8px; border-bottom:2px solid #ecf0f1; }
+td { padding:10px 8px; border-bottom:1px solid #f2f4f7; font-size:14px; }
+tr:hover td { background:#fafbfc; }
+.badge { padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:600; }
+.badge.ok { background:#e8f8f0; color:#1e8449; }
+.badge.bajo { background:#fdecea; color:#c0392b; }
+.badge.warn { background:#fef5e7; color:#b9770e; }
+
+.btn { display:inline-block; padding:8px 16px; border-radius:6px; border:none; cursor:pointer; font-size:14px; background:#1b2534; color:#fff; transition:.15s; }
+.btn:hover { background:#2c3e50; }
+.btn.amarillo { background:#f39c12; }
+.btn.amarillo:hover { background:#d68910; }
+.btn.verde { background:#27ae60; }
+.btn.verde:hover { background:#229954; }
+.btn.rojo { background:#e74c3c; }
+.btn.rojo:hover { background:#c0392b; }
+.btn.azul { background:#2980b9; }
+.btn.azul:hover { background:#2471a3; }
+.btn.gris { background:#95a5a6; }
+.btn.gris:hover { background:#7f8c8d; }
+.btn.small { padding:5px 10px; font-size:12.5px; }
+
+form.campo { display:inline; }
+input[type=text], input[type=password], input[type=number], input[type=date], select, textarea {
+  padding:8px 10px; border:1px solid #d5dbe3; border-radius:6px; font-size:14px; font-family:inherit; outline:none; width:100%; }
+input:focus, select:focus, textarea:focus { border-color:#2980b9; }
+.fila { display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+.fila > div { flex:1; min-width:180px; }
+label { display:block; font-size:12.5px; font-weight:600; color:#5d6d7e; margin-bottom:5px; }
+
+.barra-buscar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:end; }
+.barra-buscar form { display:flex; gap:10px; flex-wrap:wrap; }
+.acciones { display:flex; gap:6px; justify-content:flex-end; }
+
+.alertas { position:fixed; top:16px; right:16px; z-index:999; display:flex; flex-direction:column; gap:8px; }
+.alert { padding:12px 16px; border-radius:6px; color:#fff; font-size:14px; box-shadow:0 3px 8px rgba(0,0,0,.2); }
+.alert.success { background:#27ae60; }
+.alert.danger { background:#e74c3c; }
+.alert.warning { background:#f39c12; }
+.alert.info { background:#2980b9; }
+
+.login-wraper { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#1b2534,#2c3e50); }
+.login-caja { background:#fff; border-radius:12px; padding:36px 34px; width:340px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.login-caja .logo { text-align:center; font-size:26px; font-weight:700; color:#1b2534; margin-bottom:4px; }
+.login-caja .logo span { color:#f39c12; }
+.login-caja p.sub { text-align:center; color:#7f8fa6; font-size:13px; margin-bottom:22px; }
+.login-caja form div { margin-bottom:14px; }
+.login-caja .btn { width:100%; padding:11px; font-size:15px; }
+
+.tabla-producto { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 60px; gap:8px; align-items:center; margin-bottom:8px; }
+.linea-resumen { display:flex; justify-content:space-between; padding:6px 0; font-size:14px; }
+.total-grande { display:flex; justify-content:space-between; align-items:center; border-top:2px solid #ecf0f1; margin-top:10px; padding-top:12px; font-size:20px; font-weight:700; }
+.total-grande span:last-child { color:#27ae60; }
+</style>
+</head>
+<body>
+{% if session.get('logueado') %}
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo"> Kiosko Mi Nerita<small>Sistema de Inventarios y Ventas</small></div>
+    <nav>
+      <a href="{{ url_for('dashboard.index') }}" class="{{ 'activo' if request.endpoint=='dashboard.index' }}"> dashboard</a>
+      <a href="{{ url_for('productos.listar') }}" class="{{ 'activo' if request.endpoint in ['productos.listar','productos.guardar'] }}">Inventario / Productos</a>
+      <a href="{{ url_for('categorias.listar') }}" class="{{ 'activo' if request.endpoint=='categorias.listar' }}">📂 Categorias</a>
+      <a href="{{ url_for('ventas.nueva') }}" class="{{ 'activo' if request.endpoint=='ventas.nueva' }}">🧾 Nueva Venta</a>
+      <a href="{{ url_for('ventas.listar') }}" class="{{ 'activo' if request.endpoint in ['ventas.listar','ventas.detalle'] }}">📄 Ventas</a>
+    </nav>
+    <div class="usuario">
+      Conectado: <b>{{ session.get('usuario') }}</b>
+      <a href="{{ url_for('auth.logout') }}" class="cerrar">⏻ Cerrar sesión</a>
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar"><h1>{% block cabecera %}{% endblock %}</h1></div>
+    <div class="contenido">{% block contenido %}{% endblock %}</div>
+  </div>
+</div>
+{% else %}
+<div class="login-wraper">
+  <div class="login-caja">
+    <div class="logo"><span>Kiosco Mi Negrita</span></div>
+    <p class="sub">Sistema de Inventarios y Ventas</p>
+    {% block login_form %}{% endblock %}
+  </div>
+</div>
+{% endif %}
+
+<div class="alertas">
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% for categoria, msg in mensajes %}
+    <div class="alert {{ categoria }}">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+</div>
+<script>
+document.querySelectorAll('.alert').forEach(a => setTimeout(() => a.remove(), 4000));
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

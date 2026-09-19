@@ -1,0 +1,40 @@
+﻿{% extends 'base.html' %}
+{% block titulo %}Venta #{{ venta.id }}{% endblock %}
+{% block cabecera %}Detalle de la Venta #{{ venta.id }}{% endblock %}
+{% block contenido %}
+
+<div class="panel">
+  <h2>Resumen</h2>
+  <div class="fila">
+    <div><label>Fecha</label><div style="padding-top:6px;">{{ venta.fecha|fecha }}</div></div>
+    <div><label>Cliente</label><div style="padding-top:6px;">{{ venta.cliente }}</div></div>
+    <div><label>Total</label><div style="padding-top:6px; font-size:20px; font-weight:700; color:#27ae60;">{{ venta.total|dinero }}</div></div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Artículos ({{ detalle|length }})</h2>
+  <table>
+    <tr><th>#</th><th>Producto</th><th>Precio unit.</th><th>Cantidad</th><th>Subtotal</th></tr>
+    {% for d in detalle %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td><b>{{ d.producto_nombre }}</b></td>
+      <td>{{ d.precio_unitario|dinero }}</td>
+      <td>{{ d.cantidad }}</td>
+      <td><b>{{ d.subtotal|dinero }}</b></td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td colspan="4" style="text-align:right; font-weight:700;">TOTAL</td>
+      <td style="font-weight:700; color:#27ae60; font-size:16px;">{{ venta.total|dinero }}</td>
+    </tr>
+  </table>
+</div>
+
+<div style="display:flex; gap:10px;">
+  <a class="btn azul" href="javascript:window.print();">Imprimir</a>
+  <a class="btn gris" href="{{ url_for('ventas.listar') }}">Volver a ventas</a>
+</div>
+
+{% endblock %}
