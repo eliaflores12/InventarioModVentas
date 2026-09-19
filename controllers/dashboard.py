@@ -1,3 +1,4 @@
+"""Controlador del dashboard: recopilación y visualización de métricas principales."""
 from flask import Blueprint, render_template
 from helpers import login_required
 from models.producto import Producto
@@ -10,6 +11,8 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @dashboard_bp.route('/dashboard')
 @login_required
 def index():
+    """Consulta métricas generales (inventario, alertas y ventas) y las envía a la vista."""
+    # Recopilación de estadísticas e indicadores clave para el panel
     contexto = {
         'productos': Producto.conteo(),
         'stock_bajo': Producto.stock_bajo_conteo(STOCK_MINIMO),
