@@ -16,7 +16,7 @@ def login_required(f):
 def dinero(valor):
     """Filtro Jinja que convierte un número a formato monetario con separador de miles."""
     valor = valor or 0
-    return f'${valor:,.0f}'
+    return f'Bs {valor:,.0f}'
 
 
 def fecha_formato(dt):

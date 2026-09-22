@@ -68,5 +68,11 @@ class Producto:
 
     @staticmethod
     def stock_bajo(minimo):
-        """Obtiene hasta 10 productos en situación de alerta por bajo stock ordenados de forma ascendente."""
-        return query('SELECT * FROM productos WHERE stock <= %s ORDER BY stock ASC LIMIT 10', (minimo,))
+        """Obtiene productos con bajo stock incluyendo el nombre de su categoría."""
+        sql = (
+            'SELECT p.*, c.nombre AS categoria FROM productos p '
+            'LEFT JOIN categorias c ON c.id = p.categoria_id '
+            'WHERE p.stock <= %s '
+            'ORDER BY p.stock ASC LIMIT 10'
+        )
+        return query(sql, (minimo,))
